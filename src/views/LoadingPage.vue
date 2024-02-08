@@ -1,320 +1,5 @@
-<script setup>
-import { ref, reactive, nextTick, computed, watch, onMounted } from 'vue';
-import { useCowIdCheck } from '../composables/useCowIdCheck';
-
-import { tiryouData, tiryouDataFM } from '../composables/useTityouData';
-import CowDataDisplay from '../components/CowDataDisplay.vue';
-import DateSelector from '../components/DateSelector.vue';
-
-const selectedDate = ref(new Date().toISOString().split('T')[0]);
-
-window.tiryouDataFM = tiryouDataFM;
-
-const ownerId = ref('');
-const cowNumber = ref('');
-const classificationId = ref('');
-const bodyTemperature = ref('');
-const diseaseId = ref('');
-const symptomsId = ref('');
-const medicineId1 = ref('');
-const medicinedosage1 = ref('');
-const medicinedays1 = ref('');
-
-const medicineId2 = ref('');
-const medicinedosage2 = ref('');
-const medicinedays2 = ref('');
-
-const medicineId3 = ref('');
-const medicinedosage3 = ref('');
-const medicinedays3 = ref('');
-
-const medicineId4 = ref('');
-const medicinedosage4 = ref('');
-const medicinedays4 = ref('');
-
-const reservationDate = ref('');
-const veterinarianId = ref('');
-
-//これは表示のみ使う
-const ownerSelectedName = ref('');
-const diseaseNameSelectedName = ref('');
-const classificationSelectedName = ref('');
-const medicineSelectedName1 = ref('');
-const medicineSelectedName2 = ref('');
-const medicineSelectedName3 = ref('');
-const medicineSelectedName4 = ref('');
-const veterinarianSelectedName = ref('');
-const symptomsSelectedName = ref('');
-
-// ownerMasterのデータを取得して扱うコードをここに追加
-const ownerMaster = ref();
-const diseaseMster = ref();
-const veterinarianMster = ref();
-const classificationMster = ref();
-const symptomsMster = ref('');
-
-function ownerMasterFM(jsonData) {
-  const data = JSON.parse(jsonData);
-  ownerMaster.value = data;
-}
-
-window.ownerMasterFM = ownerMasterFM;
-
-watch(ownerId, (newId) => {
-  const selectedownerItem = ownerMaster.value.find((item) => item.id == newId);
-  if (selectedownerItem) ownerSelectedName.value = selectedownerItem.name;
-});
-
-watch(ownerSelectedName, (newName) => {
-  const selectedownerItem = ownerMaster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedownerItem) ownerId.value = selectedownerItem.id;
-});
-
-//個体checkとデータ表示
-const { isInputError, cowCeckData, cowIdCheckFM } = useCowIdCheck(
-  ownerId,
-  cowNumber
-);
-
-const resetFocus = () => {
-  nextTick(() => {
-    const inputElement = document.querySelector('[tabindex="1"]');
-    if (inputElement) inputElement.focus();
-  });
-};
-
-function diseaseMsterFM(jsonData) {
-  const data = JSON.parse(jsonData);
-  diseaseMster.value = data;
-}
-window.diseaseMsterFM = diseaseMsterFM;
-
-watch(diseaseId, (newId) => {
-  const selectedDiseaseItem = diseaseMster.value.find(
-    (item) => item.id == newId
-  );
-  if (selectedDiseaseItem)
-    diseaseNameSelectedName.value = selectedDiseaseItem.name;
-});
-
-watch(diseaseNameSelectedName, (newName) => {
-  const selectedDiseaseItem = diseaseMster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedDiseaseItem) diseaseId.value = selectedDiseaseItem.id;
-});
-
-function symptomsMsterFM(jsonData) {
-  const data = JSON.parse(jsonData);
-  symptomsMster.value = data;
-}
-window.symptomsMsterFM = symptomsMsterFM;
-
-watch(symptomsId, (newId) => {
-  const selectedSymptomsItem = symptomsMster.value.find(
-    (item) => item.id == newId
-  );
-  if (selectedSymptomsItem)
-    symptomsSelectedName.value = selectedSymptomsItem.name;
-});
-
-watch(symptomsSelectedName, (newName) => {
-  const selectedSymptomsItem = symptomsMster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedSymptomsItem) symptomsId.value = selectedSymptomsItem.id;
-});
-
-function classificationMsterFM(jsonData) {
-  const data = JSON.parse(jsonData);
-  classificationMster.value = data;
-}
-window.classificationMsterFM = classificationMsterFM;
-
-watch(classificationId, (newId) => {
-  const selectedClassificationItem = classificationMster.value.find(
-    (item) => item.id == newId
-  );
-  if (selectedClassificationItem)
-    classificationSelectedName.value = selectedClassificationItem.name;
-});
-
-watch(classificationSelectedName, (newName) => {
-  const selectedClassificationItem = classificationMster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedClassificationItem)
-    classificationId.value = selectedClassificationItem.id;
-});
-
-const medicineMster = ref();
-function medicineMsterFM(jsonData) {
-  const data = JSON.parse(jsonData);
-  medicineMster.value = data;
-}
-window.medicineMsterFM = medicineMsterFM;
-
-watch(medicineId1, (newId) => {
-  const selectedMedicine1Item = medicineMster.value.find(
-    (item) => item.id == newId
-  );
-  if (selectedMedicine1Item)
-    medicineSelectedName1.value = selectedMedicine1Item.name;
-});
-
-watch(medicineSelectedName1, (newName) => {
-  const selectedMedicine1Item = medicineMster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedMedicine1Item) medicineId1.value = selectedMedicine1Item.id;
-});
-watch(medicineId2, (newId) => {
-  const selectedMedicine2Item = medicineMster.value.find(
-    (item) => item.id == newId
-  );
-  if (selectedMedicine2Item)
-    medicineSelectedName2.value = selectedMedicine2Item.name;
-});
-
-watch(medicineSelectedName2, (newName) => {
-  const selectedMedicine2Item = medicineMster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedMedicine2Item) medicineId2.value = selectedMedicine2Item.id;
-});
-
-watch(medicineId3, (newId) => {
-  const selectedMedicine3Item = medicineMster.value.find(
-    (item) => item.id == newId
-  );
-  if (selectedMedicine3Item)
-    medicineSelectedName3.value = selectedMedicine3Item.name;
-});
-
-watch(medicineSelectedName3, (newName) => {
-  const selectedMedicine3Item = medicineMster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedMedicine3Item) medicineId3.value = selectedMedicine3Item.id;
-});
-watch(medicineId4, (newId) => {
-  const selectedMedicine4Item = medicineMster.value.find(
-    (item) => item.id == newId
-  );
-  if (selectedMedicine4Item)
-    medicineSelectedName4.value = selectedMedicine4Item.name;
-});
-
-watch(medicineSelectedName4, (newName) => {
-  const selectedMedicine4Item = medicineMster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedMedicine4Item) medicineId4.value = selectedMedicine4Item.id;
-});
-
-function veterinarianMsterFM(jsonData) {
-  const data = JSON.parse(jsonData);
-  veterinarianMster.value = data;
-}
-window.veterinarianMsterFM = veterinarianMsterFM;
-
-watch(veterinarianId, (newId) => {
-  const selectedVeterinarianItem = veterinarianMster.value.find(
-    (item) => item.id == newId
-  );
-  if (selectedVeterinarianItem)
-    veterinarianSelectedName.value = selectedVeterinarianItem.name;
-});
-
-watch(veterinarianSelectedName, (newName) => {
-  const selectedVeterinarianItem = veterinarianMster.value.find(
-    (item) => item.name === newName
-  );
-  if (selectedVeterinarianItem)
-    veterinarianId.value = selectedVeterinarianItem.id;
-});
-
-// resetNewItem関数を定義
-const resetNewItem = () => {
-  ownerId.value = '';
-  cowNumber.value = '';
-  classificationId.value = '';
-  bodyTemperature.value = '';
-  diseaseId.value = '';
-  symptomsId.value = '';
-  medicineId1.value = '';
-  medicinedosage1.value = '';
-  medicinedays1.value = '';
-  medicineId2.value = '';
-  medicinedosage2.value = '';
-  medicinedays2.value = '';
-  medicineId3.value = '';
-  medicinedosage3.value = '';
-  medicinedays3.value = '';
-  medicineId4.value = '';
-  medicinedosage4.value = '';
-  medicinedays4.value = '';
-  reservationDate.value = '';
-  veterinarianId.value = '';
-  ownerSelectedName.value = '';
-  diseaseNameSelectedName.value = '';
-  classificationSelectedName.value = '';
-  medicineSelectedName1.value = '';
-  medicineSelectedName2.value = '';
-  medicineSelectedName3.value = '';
-  medicineSelectedName4.value = '';
-  veterinarianSelectedName.value = '';
-  symptomsSelectedName.value = '';
-};
-
-// tokubetsuAdd関数を定義
-function CreateData() {
-  // FileMakerに渡すデータオブジェクトを作成
-  const data = {
-    date: selectedDate.value,
-    ownerId: ownerId.value,
-    cowNumber: cowNumber.value,
-    classificationId: classificationId.value,
-    bodyTemperature: bodyTemperature.value,
-
-    diseaseId: diseaseId.value,
-    symptomsId: symptomsId.value,
-    medicineId1: medicineId1.value,
-    medicinedosage1: medicinedosage1.value,
-    medicinedays1: medicinedays1.value,
-
-    medicineId2: medicineId2.value,
-    medicinedosage2: medicinedosage2.value,
-    medicinedays2: medicinedays2.value,
-
-    medicineId3: medicineId3.value,
-    medicinedosage3: medicinedosage3.value,
-    medicinedays3: medicinedays3.value,
-
-    medicineId4: medicineId4.value,
-    medicinedosage4: medicinedosage4.value,
-    medicinedays4: medicinedays4.value,
-    reservationDate: reservationDate.value,
-    veterinarianId: veterinarianId.value,
-  };
-
-  // データオブジェクトをJSON文字列に変換
-  const jsonData = JSON.stringify(data);
-
-  //FileMakerのスクリプトを実行し、JSONデータを渡す
-  FileMaker.PerformScript('CreateTiryouData', jsonData);
-  //入力フィールドをリセット
-  resetNewItem();
-  resetFocus();
-}
-</script>
-
 <template>
-  <DateSelector v-model="selectedDate" />
-  <CowDataDisplay :isInputError="isInputError" :cowCeckData="cowCeckData" />
-  <div class="overscroll-none">
+  <div class="overscroll-none animate-pulse">
     <div class="flex mx-20 justify-center bg-slate-100">
       <form class="flex w-full gap-1 p-4">
         <div class="flex flex-col w-52">
@@ -322,8 +7,8 @@ function CreateData() {
           <label
             for="cowNumber"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >管理番号</label
-          >
+            ><br
+          /></label>
           <input
             v-model="cowNumber"
             :class="{ 'border-red-500': isInputError }"
@@ -340,8 +25,8 @@ function CreateData() {
           <label
             for="ownerId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >畜主名</label
-          >
+            ><br
+          /></label>
           <div class="flex w-full">
             <input
               v-model="ownerId"
@@ -372,13 +57,13 @@ function CreateData() {
           <label
             for="classificationId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >治療区分</label
-          >
+            ><br
+          /></label>
           <label
             for=""
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >体温</label
-          >
+            ><br
+          /></label>
           <div class="flex w-full">
             <input
               v-model="classificationId"
@@ -414,13 +99,13 @@ function CreateData() {
           <label
             for="ownerId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >病名</label
-          >
+            ><br
+          /></label>
           <label
             for="ownerId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >症状</label
-          >
+            ><br
+          /></label>
           <div class="flex w-full">
             <input
               v-model="diseaseId"
@@ -468,13 +153,13 @@ function CreateData() {
           <label
             for="ownerId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >薬品1</label
-          >
+            ><br
+          /></label>
           <label
             for="ownerId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >薬品2</label
-          >
+            ><br
+          /></label>
           <div class="flex w-full">
             <input
               v-model="medicineId1"
@@ -554,13 +239,13 @@ function CreateData() {
           <label
             for="ownerId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >薬品3</label
-          >
+            ><br
+          /></label>
           <label
             for="ownerId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >薬品4</label
-          >
+            ><br
+          /></label>
           <div class="flex w-full">
             <input
               v-model="medicineId3"
@@ -640,13 +325,13 @@ function CreateData() {
           <label
             for="ownerId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >次回予約</label
-          >
+            ><br
+          /></label>
           <label
             for="veterinarianId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
-            >獣医師</label
-          >
+            ><br
+          /></label>
           <div class="flex w-full">
             <input
               v-model="reservationDate"
@@ -659,7 +344,6 @@ function CreateData() {
           <div class="flex w-full">
             <input
               v-model="veterinarianId"
-              @blur="isInputError ? resetFocus() : null"
               type="text"
               required
               tabindex="20"
@@ -687,20 +371,16 @@ function CreateData() {
           /></label>
           <br />
           <button
-            @blur="resetFocus"
-            @click="CreateData"
             :disabled="isInputError"
             tabindex="21"
             type="button"
-            class="transform rounded-lg bg-blue-600 px-6 py-2 text-xs font-medium capitalize tracking-wide text-white transition-colors duration-300 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 disabled:bg-opacity-50"
-          >
-            Add
-          </button>
+            class="transform rounded-lg bg-gray-600 px-6 py-2 text-xs font-medium capitalize tracking-wide text-white transition-colors duration-300 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 disabled:bg-opacity-50"
+          ></button>
         </div>
       </form>
     </div>
   </div>
-  <div class="flex flex-col my-5">
+  <div class="flex flex-col my-5 animate-pulse">
     <div class="overflow-x-auto">
       <div class="min-w-full inline-block align-middle">
         <div class="overflow-hidden">
@@ -714,107 +394,102 @@ function CreateData() {
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    治療日
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    管理番号
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    畜主名
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    区分
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    病名
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    症状
-                  </th>
-                  <th
-                    class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
-                  >
-                    薬品名1
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-10"
                   >
-                    量
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-10"
                   >
-                    指示
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    薬品名2
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-10"
                   >
-                    量
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-10"
                   >
-                    指示
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    薬品名3
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-10"
                   >
-                    量
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-10"
                   >
-                    指示
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    薬品名4
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-10"
                   >
-                    量
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-10"
                   >
-                    指示
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    次回
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    獣医
+                    <br />
                   </th>
                   <th
                     class="px-6 py-3 text-xs font-medium text-gray-500 uppercase w-32"
                   >
-                    Action
+                    <br />
                   </th>
                 </tr>
               </thead>
@@ -830,11 +505,6 @@ function CreateData() {
                     class="px-6 py-4 w-32 text-xs text-center font-medium text-gray-800"
                   >
                     {{ item.cowNumber !== 'null' ? item.cowNumber : '' }}
-                  </td>
-                  <td
-                    class="px-6 py-4 w-32 text-xs text-center font-medium text-gray-800"
-                  >
-                    {{ item.ownerName !== 'null' ? item.ownerName : '' }}
                   </td>
 
                   <td
@@ -960,4 +630,27 @@ function CreateData() {
     </div>
   </div>
 </template>
-<style scoped></style>
+
+<script setup>
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+onMounted(() => {
+  // FileMakerのスクリプトを実行してデータを読み込む
+
+  const router = useRouter();
+  // 3秒後に目的のページに遷移する
+  setTimeout(() => {
+    router.push('/treatment');
+  }, 3000);
+});
+</script>
+
+<style scoped>
+.loading-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+</style>

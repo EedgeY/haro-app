@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, nextTick, computed, watch, onMounted } from 'vue';
 import { useCowIdCheck } from '../composables/useCowIdCheck';
+
 import { tiryouData, tiryouDataFM } from '../composables/useTityouData';
 import CowDataDisplay from '../components/CowDataDisplay.vue';
 import DateSelector from '../components/DateSelector.vue';
@@ -59,7 +60,6 @@ const symptomsMster = ref('');
 function ownerMasterFM(jsonData) {
   const data = JSON.parse(jsonData);
   ownerMaster.value = data;
-  console.log(ownerMaster.value);
 }
 
 window.ownerMasterFM = ownerMasterFM;
@@ -109,11 +109,12 @@ watch(diseaseNameSelectedName, (newName) => {
   );
   if (selectedDiseaseItem) diseaseId.value = selectedDiseaseItem.id;
 });
+
 function symptomsMsterFM(jsonData) {
   const data = JSON.parse(jsonData);
   symptomsMster.value = data;
 }
-window.diseaseMsterFM = symptomsMsterFM;
+window.symptomsMsterFM = symptomsMsterFM;
 
 watch(symptomsId, (newId) => {
   const selectedSymptomsItem = symptomsMster.value.find(
@@ -383,7 +384,7 @@ function CreateData() {
             />
             <select
               v-model="classificationSelectedName"
-              class="p-2 w-4/5 border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
+              class="p-2 w-4/5 border-gray-200 rounded-lg rounded-l-none text-xs focus:border-blue-500 focus:ring-blue-500"
             >
               <option
                 v-for="item in classificationMster"
@@ -425,7 +426,7 @@ function CreateData() {
             />
             <select
               v-model="diseaseNameSelectedName"
-              class="p-2 w-4/5 border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
+              class="p-2 w-4/5 border-gray-200 rounded-lg rounded-l-none text-xs focus:border-blue-500 focus:ring-blue-500"
             >
               <option
                 v-for="item in diseaseMster"
@@ -446,10 +447,10 @@ function CreateData() {
             />
             <select
               v-model="symptomsSelectedName"
-              class="p-2 w-4/5 border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
+              class="p-2 w-4/5 border-gray-200 rounded-lg rounded-l-none text-xs focus:border-blue-500 focus:ring-blue-500"
             >
               <option
-                v-for="item in symptomsMaster"
+                v-for="item in symptomsMster"
                 :key="item.id"
                 :value="item.name"
               >
@@ -657,11 +658,11 @@ function CreateData() {
               type="text"
               required
               tabindex="20"
-              class="p-2 w-1/4 border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+              class="p-2 w-1/4 border-gray-200 rounded-lg rounded-r-none text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
             />
             <select
               v-model="veterinarianSelectedName"
-              class="p-2 w-full border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
+              class="p-2 w-full border-gray-200 rounded-lg rounded-l-none text-xs focus:border-blue-500 focus:ring-blue-500"
             >
               <option
                 v-for="item in veterinarianMster"

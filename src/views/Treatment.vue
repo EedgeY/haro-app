@@ -1,7 +1,6 @@
 <script setup>
 import { ref, reactive, nextTick, computed, watch, onMounted } from 'vue';
 import { useCowIdCheck } from '../composables/useCowIdCheck';
-import { IconTrash, IconEdit } from '@tabler/icons-vue';
 import { tiryouData, tiryouDataFM } from '../composables/useTityouData';
 import CowDataDisplay from '../components/CowDataDisplay.vue';
 import DateSelector from '../components/DateSelector.vue';
@@ -320,17 +319,17 @@ function CreateData() {
 
 function deleteData(item) {
   // 確認ダイアログを表示
+  console.log(item.pk);
   const isConfirmed = confirm('このデータを削除しますか？');
   if (!isConfirmed) {
     return; // キャンセルされた場合は何もしない
   }
 
-  // pkが存在する場合はFileMakerのスクリプトを実行して削除
   FileMaker.PerformScript('DeleteData', item.pk);
-  // filteredDataを更新するためには、tokubetsuDataを更新する必要があります
-  tokubetsuData.value = tokubetsuData.value.filter(
-    (data) => data.pk !== item.pk
-  );
+  setTimeout(() => {
+    const jsonData = JSON.stringify({ date: selectedDate.value });
+    FileMaker.PerformScript('tiryouData', jsonData);
+  }, 1000);
 }
 </script>
 
@@ -956,21 +955,54 @@ function deleteData(item) {
                         class="m-1 inline-flex justify-center items-center w-[46px] h-[46px] rounded-full bg-teal-100 text-teal-800 cursor-pointer hover:bg-teal-300"
                         type="button"
                       >
-                        <IconEdit
-                          :size="20"
-                          stroke-width="1"
-                          class="text-teal-800"
-                        />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="icon icon-tabler icon-tabler-edit"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path
+                            d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"
+                          />
+                          <path
+                            d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"
+                          />
+                          <path d="M16 5l3 3" />
+                        </svg>
                       </span>
                       <span
                         class="m-1 inline-flex justify-center items-center w-[46px] h-[46px] rounded-full bg-gray-100 text-gray-800 cursor-pointer hover:bg-gray-300"
                         type="button"
                       >
-                        <IconTrash
-                          class="text-gray-800"
-                          :size="20"
-                          stroke-width="1"
-                        />
+                        <svg
+                          @click="deleteData(item)"
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="icon icon-tabler icon-tabler-trash"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M4 7l16 0" />
+                          <path d="M10 11l0 6" />
+                          <path d="M14 11l0 6" />
+                          <path
+                            d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                          />
+                          <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
                       </span>
                     </div>
                   </td>

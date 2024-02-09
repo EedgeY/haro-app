@@ -1,13 +1,17 @@
 <script setup>
 import { ref, reactive, nextTick, computed, watch, onMounted } from 'vue';
 import { useCowIdCheck } from '../composables/useCowIdCheck';
-
+import { IconTrash, IconEdit } from '@tabler/icons-vue';
 import { tiryouData, tiryouDataFM } from '../composables/useTityouData';
 import CowDataDisplay from '../components/CowDataDisplay.vue';
 import DateSelector from '../components/DateSelector.vue';
 
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
-
+setTimeout(() => {
+  FileMaker.PerformScript('GetOwnerMaster');
+  const jsonData = JSON.stringify({ date: selectedDate.value });
+  FileMaker.PerformScript('tiryouData', jsonData);
+}, 100);
 window.tiryouDataFM = tiryouDataFM;
 
 const ownerId = ref('');
@@ -308,6 +312,25 @@ function CreateData() {
   //入力フィールドをリセット
   resetNewItem();
   resetFocus();
+  setTimeout(() => {
+    const jsonData = JSON.stringify({ date: selectedDate.value });
+    FileMaker.PerformScript('tiryouData', jsonData);
+  }, 1000);
+}
+
+function deleteData(item) {
+  // 確認ダイアログを表示
+  const isConfirmed = confirm('このデータを削除しますか？');
+  if (!isConfirmed) {
+    return; // キャンセルされた場合は何もしない
+  }
+
+  // pkが存在する場合はFileMakerのスクリプトを実行して削除
+  FileMaker.PerformScript('DeleteData', item.pk);
+  // filteredDataを更新するためには、tokubetsuDataを更新する必要があります
+  tokubetsuData.value = tokubetsuData.value.filter(
+    (data) => data.pk !== item.pk
+  );
 }
 </script>
 
@@ -375,7 +398,7 @@ function CreateData() {
             >治療区分</label
           >
           <label
-            for=""
+            for="bodyTemperature"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
             >体温</label
           >
@@ -412,12 +435,12 @@ function CreateData() {
         </div>
         <div class="flex flex-col w-72">
           <label
-            for="ownerId"
+            for="diseaseId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
             >病名</label
           >
           <label
-            for="ownerId"
+            for="symptomsId"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
             >症状</label
           >
@@ -466,12 +489,12 @@ function CreateData() {
         </div>
         <div class="flex flex-col">
           <label
-            for="ownerId"
+            for="medicineId1"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
             >薬品1</label
           >
           <label
-            for="ownerId"
+            for="medicineId2"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
             >薬品2</label
           >
@@ -552,12 +575,12 @@ function CreateData() {
         </div>
         <div class="flex flex-col">
           <label
-            for="ownerId"
+            for="medicineId3"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
             >薬品3</label
           >
           <label
-            for="ownerId"
+            for="medicineId4"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
             >薬品4</label
           >
@@ -638,7 +661,7 @@ function CreateData() {
         </div>
         <div class="flex flex-col w-72">
           <label
-            for="ownerId"
+            for="reservationDate"
             class="px-2 py-1 text-xs font-medium text-gray-500 uppercase"
             >次回予約</label
           >

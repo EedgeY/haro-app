@@ -4,6 +4,7 @@ import { useCowIdCheck } from '../composables/useCowIdCheck';
 import { tiryouData, tiryouDataFM } from '../composables/useTityouData';
 import CowDataDisplay from '../components/CowDataDisplay.vue';
 import DateSelector from '../components/DateSelector.vue';
+import Title from '../components/Title.vue';
 
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
 setTimeout(() => {
@@ -334,6 +335,7 @@ function deleteData(item) {
 </script>
 
 <template>
+  <Title />
   <DateSelector v-model="selectedDate" />
   <CowDataDisplay :isInputError="isInputError" :cowCeckData="cowCeckData" />
   <div class="overscroll-none">

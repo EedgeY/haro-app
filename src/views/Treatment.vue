@@ -1,5 +1,13 @@
 <script setup>
-import { ref, reactive, nextTick, computed, watch, onMounted } from 'vue';
+import {
+  ref,
+  reactive,
+  nextTick,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue';
 import { useCowIdCheck } from '../composables/useCowIdCheck';
 import { tiryouData, tiryouDataFM } from '../composables/useTityouData';
 import CowDataDisplay from '../components/CowDataDisplay.vue';
@@ -332,6 +340,55 @@ function deleteData(item) {
     FileMaker.PerformScript('tiryouData', jsonData);
   }, 1000);
 }
+
+const formRef = ref(null); // フォームの参照を保持するref
+
+// Enterキーが押されたときの処理
+const handleEnterKey = (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault(); // デフォルトのフォーム送信を防止
+
+    // 現在の要素のタブインデックスを取得
+    const currentIndex = event.target.tabIndex;
+
+    // 次の要素を探す
+    let nextElement = document.querySelector(
+      `[tabindex="${currentIndex + 1}"]`
+    );
+
+    // 次の要素が見つかればフォーカスを移動
+    if (nextElement) {
+      nextElement.focus();
+    } else {
+      // 次の要素がなければ、フォームの最初の要素にフォーカスを移動
+      let firstElement = formRef.value.querySelector('[tabindex="1"]');
+      if (firstElement) {
+        firstElement.focus();
+      }
+    }
+  }
+};
+
+// コンポーネントがマウントされたらイベントリスナーを設定
+onMounted(() => {
+  if (formRef.value) {
+    formRef.value.addEventListener('keydown', handleEnterKey);
+  }
+});
+
+// コンポーネントがアンマウントされる前にイベントリスナーを削除
+onBeforeUnmount(() => {
+  if (formRef.value) {
+    formRef.value.removeEventListener('keydown', handleEnterKey);
+  }
+});
+const handleButtonKeydown = (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault(); // ボタンのデフォルトのEnterキーの挙動（フォーム送信など）を防ぐ
+    CreateData(); // データを確定する関数を実行
+  }
+  // Tabキーが押された場合は、デフォルトの挙動（次の要素へのフォーカス移動）を利用するため、何もしない
+};
 </script>
 
 <template>
@@ -340,7 +397,7 @@ function deleteData(item) {
   <CowDataDisplay :isInputError="isInputError" :cowCeckData="cowCeckData" />
   <div class="overscroll-none">
     <div class="flex mx-20 justify-center bg-slate-100">
-      <form class="flex w-full gap-1 p-4">
+      <form ref="formRef" class="flex w-full gap-1 p-4">
         <div class="flex flex-col w-52">
           <br />
           <label
@@ -374,12 +431,12 @@ function deleteData(item) {
               required
               tabindex="2"
               @blur="cowIdCheckFM"
-              class="p-2 w-1/5 border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+              class="p-2 w-1/5 border-gray-200 rounded-l-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
             />
             <select
               v-model="ownerSelectedName"
               @blur="cowIdCheckFM"
-              class="p-2 w-4/5 border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
+              class="p-2 w-4/5 border-gray-200 rounded-r-lg text-xs focus:border-blue-500 focus:ring-blue-500"
             >
               <option
                 v-for="item in ownerMaster"
@@ -427,10 +484,10 @@ function deleteData(item) {
           <div class="flex w-full">
             <input
               v-model="bodyTemperature"
-              type="text "
+              type="text"
               required
               tabindex="4"
-              class="p-2 border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+              class="p-2 w-full border-gray-200 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
             />
           </div>
         </div>
@@ -713,6 +770,7 @@ function deleteData(item) {
           <button
             @blur="resetFocus"
             @click="CreateData"
+            @keydown="handleButtonKeydown"
             :disabled="isInputError"
             tabindex="21"
             type="button"
@@ -722,6 +780,44 @@ function deleteData(item) {
           </button>
         </div>
       </form>
+    </div>
+  </div>
+  <div class="flex justify-end mx-20 gap gap-10">
+    <div>
+      <p class="text-xs text-gray-600">次へ</p>
+      <span
+        class="flex flex-wrap items-center gap-x-1 text-sm text-gray-600 dark:text-gray-400"
+      >
+        <kbd
+          class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-200 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+        >
+          tab
+        </kbd>
+        or
+        <kbd
+          class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-200 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+        >
+          enter
+        </kbd>
+      </span>
+    </div>
+    <div>
+      <p class="text-xs text-gray-600">戻る</p>
+      <span
+        class="flex flex-wrap items-center gap-x-1 text-sm text-gray-600 dark:text-gray-400"
+      >
+        <kbd
+          class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-100 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+        >
+          shift
+        </kbd>
+        +
+        <kbd
+          class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-100 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+        >
+          tab
+        </kbd>
+      </span>
     </div>
   </div>
   <div class="flex flex-col my-5">

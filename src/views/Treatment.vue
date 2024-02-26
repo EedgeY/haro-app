@@ -389,6 +389,18 @@ const handleButtonKeydown = (event) => {
   }
   // Tabキーが押された場合は、デフォルトの挙動（次の要素へのフォーカス移動）を利用するため、何もしない
 };
+
+function EditData(pk) {
+  FileMaker.PerformScript('EditData', pk);
+}
+
+function EditComfirm() {
+  setTimeout(() => {
+    const jsonData = JSON.stringify({ date: selectedDate.value });
+    FileMaker.PerformScript('tiryouData', jsonData);
+  }, 1000);
+}
+window.EditComfirm = EditComfirm;
 </script>
 
 <template>
@@ -406,6 +418,7 @@ const handleButtonKeydown = (event) => {
             >管理番号</label
           >
           <input
+            id="cowNumber"
             v-model="cowNumber"
             :class="{ 'border-red-500': isInputError }"
             type="text"
@@ -425,6 +438,7 @@ const handleButtonKeydown = (event) => {
           >
           <div class="flex w-full">
             <input
+              id="ownerId"
               v-model="ownerId"
               :class="{ 'border-red-500': isInputError }"
               type="text"
@@ -462,6 +476,7 @@ const handleButtonKeydown = (event) => {
           >
           <div class="flex w-full">
             <input
+              id="classificationId"
               v-model="classificationId"
               type="text"
               required
@@ -483,6 +498,7 @@ const handleButtonKeydown = (event) => {
           </div>
           <div class="flex w-full">
             <input
+              id="bodyTemperature"
               v-model="bodyTemperature"
               type="text"
               required
@@ -504,6 +520,7 @@ const handleButtonKeydown = (event) => {
           >
           <div class="flex w-full">
             <input
+              id="diseaseId"
               v-model="diseaseId"
               type="text"
               required
@@ -525,6 +542,7 @@ const handleButtonKeydown = (event) => {
           </div>
           <div class="flex w-full">
             <input
+              id="symptomsId"
               v-model="symptomsId"
               type="text"
               required
@@ -558,6 +576,7 @@ const handleButtonKeydown = (event) => {
           >
           <div class="flex w-full">
             <input
+              id="medicineId1"
               v-model="medicineId1"
               type="text"
               required
@@ -595,6 +614,7 @@ const handleButtonKeydown = (event) => {
           </div>
           <div class="flex w-full">
             <input
+              id="medicineId2"
               v-model="medicineId2"
               type="text"
               required
@@ -644,6 +664,7 @@ const handleButtonKeydown = (event) => {
           >
           <div class="flex w-full">
             <input
+              id="medicineId3"
               v-model="medicineId3"
               type="text"
               required
@@ -681,6 +702,7 @@ const handleButtonKeydown = (event) => {
           </div>
           <div class="flex w-full">
             <input
+              id="medicineId4"
               v-model="medicineId4"
               type="text"
               required
@@ -730,6 +752,7 @@ const handleButtonKeydown = (event) => {
           >
           <div class="flex w-full">
             <input
+              id="reservationDate"
               v-model="reservationDate"
               type="date"
               required
@@ -739,6 +762,7 @@ const handleButtonKeydown = (event) => {
           </div>
           <div class="flex w-full">
             <input
+              id="veterinarianId"
               v-model="veterinarianId"
               @blur="isInputError ? resetFocus() : null"
               type="text"
@@ -761,9 +785,7 @@ const handleButtonKeydown = (event) => {
           </div>
         </div>
         <div class="flex flex-col">
-          <label
-            for="height"
-            class="px-2 py-1 text-xs font-medium uppercase text-gray-500"
+          <label class="px-2 py-1 text-xs font-medium uppercase text-gray-500"
             ><br
           /></label>
           <br />
@@ -782,42 +804,45 @@ const handleButtonKeydown = (event) => {
       </form>
     </div>
   </div>
-  <div class="flex justify-end mx-20 gap gap-10">
-    <div>
-      <p class="text-xs text-gray-600">次へ</p>
-      <span
-        class="flex flex-wrap items-center gap-x-1 text-sm text-gray-600 dark:text-gray-400"
-      >
-        <kbd
-          class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-200 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+  <div class="flex justify-between mx-20">
+    <div><button @click="EditComfirm">更新</button></div>
+    <div class="flex gap-5">
+      <div>
+        <p class="text-xs text-gray-600">次へ</p>
+        <span
+          class="flex flex-wrap items-center gap-x-1 text-sm text-gray-600 dark:text-gray-400"
         >
-          tab
-        </kbd>
-        or
-        <kbd
-          class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-200 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+          <kbd
+            class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-200 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+          >
+            tab
+          </kbd>
+          or
+          <kbd
+            class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-200 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+          >
+            enter
+          </kbd>
+        </span>
+      </div>
+      <div>
+        <p class="text-xs text-gray-600">戻る</p>
+        <span
+          class="flex flex-wrap items-center gap-x-1 text-sm text-gray-600 dark:text-gray-400"
         >
-          enter
-        </kbd>
-      </span>
-    </div>
-    <div>
-      <p class="text-xs text-gray-600">戻る</p>
-      <span
-        class="flex flex-wrap items-center gap-x-1 text-sm text-gray-600 dark:text-gray-400"
-      >
-        <kbd
-          class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-100 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
-        >
-          shift
-        </kbd>
-        +
-        <kbd
-          class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-100 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
-        >
-          tab
-        </kbd>
-      </span>
+          <kbd
+            class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-100 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+          >
+            shift
+          </kbd>
+          +
+          <kbd
+            class="min-h-[30px] inline-flex justify-center items-center py-1 px-1.5 bg-gray-100 font-mono text-sm text-gray-800 rounded-md dark:bg-gray-700 dark:text-gray-200"
+          >
+            tab
+          </kbd>
+        </span>
+      </div>
     </div>
   </div>
   <div class="flex flex-col my-5">
@@ -1054,6 +1079,7 @@ const handleButtonKeydown = (event) => {
                         type="button"
                       >
                         <svg
+                          @click="EditData(item.pk)"
                           xmlns="http://www.w3.org/2000/svg"
                           class="icon icon-tabler icon-tabler-edit"
                           width="20"
